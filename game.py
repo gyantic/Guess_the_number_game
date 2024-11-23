@@ -1,28 +1,34 @@
 import random
 import sys
 
+def read_input(prompt: str, is_int: bool = False) -> str:
+  """入力した後、それをstdinから読む関数"""
+  sys.stdout.buffer.write(prompt.encode())
+  sys.stdout.flush()
+  user_input  = sys.stdin.buffer.readline().decode()
+  #入力がint型の数でない場合エラーを返すようにする
+  if is_int:
+    try:
+      return int(user_input)
+    except ValueError:
+      sys.stdout.buffer.write(b"Invalid input. Please enter an integer.\n")
+      return read_input(prompt, is_int=True)
+
+
 while True:
-  sys.stdout.buffer.write(b'Please input minimum number.\n')
-  sys.stdout.flush()
+  min_number = read_input("Please input minimum number.\n", is_int=True)
 
-  n = sys.stdin.buffer.readline()
-  print('You input ' + n.decode())
+  max_number = read_input("Please input maximum number.\n", is_int=True)
 
-  sys.stdout.buffer.write(b'Please input maximum number.\n')
-  sys.stdout.flush()
-
-  m = sys.stdin.buffer.readline()
-  if (int(m.decode()) < int(n.decode())):
-    print('Your input is invalid\n')
+  if (max_number < min_number):
+    sys.stdout.buffer.write(b'Your input is invalid.\n')
   else:
     break
 
-min_number = int(n.decode())
-max_number = int(m.decode())
 
 rand_number = random.randint(min_number, max_number)
 
-limit = 3
+limit = 3 #制限回数
 
 for _ in range(limit):
   sys.stdout.buffer.write(b"Please input your guess.\n")
@@ -30,9 +36,11 @@ for _ in range(limit):
   guessed_num = int((sys.stdin.buffer.readline()).decode())
 
   if rand_number == guessed_num:
-    print("Your guess is right.\n")
+    sys.stdout.buffer.write(b"Your guess is right.\n")
     break
   else:
-    if _ == limit-1:
-      print("Time is out!/n")
-      print(f"Right answer is {rand_number}")
+    if _ == limit - 1:
+      sys.stdout.buffer.write(b"Time is out!\n")
+      sys.stdout.buffer.write(f"The right answer is {rand_number}\n".encode())
+    else:
+      sys.stdout.buffer.write(b"Wrong guess. Try again.\n")
